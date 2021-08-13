@@ -1,0 +1,7 @@
+I lösningsförslagen tipsar vi om att du ska skapa/ladda hem en fil med bara lite innehåll medan man testar sitt program. Varför, tror du?
+
+- För att enkelt kunna kontrollräkna och gå tillbaka i programmet när texten är kort, till skillnad om det var flera tusen tecken.
+
+Texten i filen lagerlof.txt innehåller de svenska bokstäverna å, ä och ö. Som programmet fungerar nu räknas inte dessa bokstäver med alls. Hur skulle man gå tillväga för att också inkludera å, ä och ö i histogrammet. Du behöver inte ge en program-lösning, men resonera kring hur man skulle kunna göra.
+
+- eftersom mitt program gör om texten till stora bokstäver så skulle jag göra en if stats för att checka om karaktären i fråga är Å Ä eller Ö, samt öka variabeln ANTAL_BOKSTAVER med 3.

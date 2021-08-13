@@ -1,0 +1,13 @@
+Finns det någon anledning varför vi beräknar både det absoluta och det relativa histogrammet i samma funktionsanrop?
+
+- Ja, eftersom det absoluta histogrammet fyller på arrayen som det relativa sedan använder för att få fram det procentuella värdet i respektive array.
+
+Tänk dig att vi lägger till en rad sist i huvudprogrammet som anropar funktionen setText med en ny text, då får vi resultatet att attributet text ändras, 
+men histogrammen fortfarande är desamma och alltså inte hör ihop med den aktuella texten. Finns det något sätt att lösa det problemet? Du behöver bara svara med ord, inte programmera något nytt.
+
+- om man låter setText låta anropa nödvändiga funktioner så kan man låta alla värden uppdateras allt eftersom texten byts ut.
+
+Skulle man kunna inkludera funktionerna namn_pa_fil och inlasning i klassen? Skulle det göra någon skillnad på resultatet? Finns det några fördelar med att använda samma funktioner som tidigare?
+
+- Ja, man skulle kunna inkludera båda funktionerna till klassen, det skulle leda till att färre variabler används i programmet. Fördelen med att inte ha funktionerna i klassen innebär att man skulle kunna ha flera klasser som kan utnyttja funktionerna
+i stället för att samma funktioner i flera klasser, alternativt att klasserna ärver funktionerna, vilket inte alltid är passande.

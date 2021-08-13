@@ -1,0 +1,65 @@
+Programkörning 1:
+
+Programmet kräver inmatning av två heltal följd av en bokstav (a,m eller k)
+Var snäll och skriv ett värde: 3
+Var snäll och skriv ett värde: 5
+Var snäll och skriv bokstav (a, m eller k): a
+Resultat: 12
+
+Programkörning 2:
+
+Programmet kräver inmatning av två heltal följd av en bokstav (a,m eller k)
+Var snäll och skriv ett värde: 3
+Var snäll och skriv ett värde: 5
+Var snäll och skriv bokstav (a, m eller k): m
+Resultat: 60
+
+Programkörning 3:
+
+Programmet kräver inmatning av två heltal följd av en bokstav (a,m eller k)
+Var snäll och skriv ett värde: 3
+Var snäll och skriv ett värde: 5
+Var snäll och skriv bokstav (a, m eller k): k
+Resultat: 50
+
+Programkörning 4:
+
+Programmet kräver inmatning av två heltal följd av en bokstav (a,m eller k)
+Var snäll och skriv ett värde: -3
+Var snäll och skriv ett värde: 5
+Var snäll och skriv bokstav (a, m eller k): m
+Resultat: 0
+
+Programkörning 5:
+
+Programmet kräver inmatning av två heltal följd av en bokstav (a,m eller k)
+Var snäll och skriv ett värde: 5
+Var snäll och skriv ett värde: 3
+Var snäll och skriv bokstav (a, m eller k): a
+Resultat: 12
+
+Programkörning 6:
+
+Programmet kräver inmatning av två heltal följd av en bokstav (a,m eller k)
+Var snäll och skriv ett värde: -3
+Var snäll och skriv ett värde: -5
+Var snäll och skriv bokstav (a, m eller k): a
+Resultat: -12
+
+Programkörning 7:
+
+Programmet kräver inmatning av två heltal följd av en bokstav (a,m eller k)
+Var snäll och skriv ett värde: 1
+Var snäll och skriv ett värde: 100
+Var snäll och skriv bokstav (a, m eller k): k
+Resultat: 338350
+
+Programkörning 8:
+
+Programmet kräver inmatning av två heltal följd av en bokstav (a,m eller k)
+Var snäll och skriv ett värde: 1
+Var snäll och skriv ett värde: 1000
+Var snäll och skriv bokstav (a, m eller k): m
+Resultat: 0
+
+Svaret blir 0 för att talet blir för stort för "int"

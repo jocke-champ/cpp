@@ -1,0 +1,7 @@
+1. Tycker du att det finns någon fördel att använda funktioner för att utföra olika uppgifter i programmet, jämfört med hur det såg ut i Inlämningsuppgift 2 där allt hände i huvudprogrammet?
+
+- Ja, det är mycket enklare att läsa vad programmet ska göra när man läser main-funktionen och bara ser namnen på funktionerna och inte vad funktionerna ska göra.
+
+2. I någon av dina skrivna funktioner använder du dig troligen av referensparametrar. Varför gör man inte det jämt?
+
+- Om man skulle vilja ändra på värdet endast innanför en funktion så kommer inte referensparametern inte tillåta det då den ändrar värdet i hela programmet.

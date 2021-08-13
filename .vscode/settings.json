@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "iostream": "cpp",
+        "ostream": "cpp",
+        "cstdlib": "cpp",
+        "cmath": "cpp"
+    },
+    "cSpell.ignoreWords": [
+        "inmatning"
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "cSpell.words": [
+        "transaktion"
+    ],
+    "C_Cpp.errorSquiggles": "Disabled",
+    "files.associations": {
+        "xstring": "cpp",
+        "string": "cpp",
+        "iosfwd": "cpp"
+    }
+}

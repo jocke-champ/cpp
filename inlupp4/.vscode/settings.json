@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        "ostream": "cpp",
+        "iostream": "cpp"
+    },
+    "cSpell.ignoreWords": [
+        "abs",
+        "antal",
+        "berakna",
+        "bokstav",
+        "bokstaver",
+        "histogram",
+        "inmating",
+        "inmatning",
+        "skriv"
+    ]
+}
