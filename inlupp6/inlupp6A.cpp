@@ -27,6 +27,7 @@ class Person
    Person(const string &namn, double betalat_andras, double skyldig);
    double hamtaBetalat();
    double hamtaSkyldig();
+   string hamtaNamn();
    void   skrivUt(ostream &os);
 };
 
@@ -59,11 +60,14 @@ class Transaktion
 
  public:
    Transaktion();
-   Transaktion(string datum, strin typ, string namn, double belopp, int antal_kompisar, string* kompisar);
+   Transaktion(string datum, string typ, string namn, double belopp, int antal_kompisar, string* kompisar);
    ~Transaktion();
    string hamtaNamn();
    double hamtaBelopp();
    int    hamtaAntalKompisar();
+   string hamtaDatum();
+   string hamtaTyp();
+   string hamtaKompis(int i);
    bool   finnsKompis(const string &namnet);
    bool   lasIn(istream &is);
    void   skrivUt(ostream &os);
@@ -90,22 +94,14 @@ class Transaktion
     // ...eventuellt div. annat...
  }; 
 
-Transaktion::Transaktion(string datum, string typ, string namn, double belopp, int antal_kompisar, string* kompisar){
-  Transaktion::datum = datum;
-  Transaktion::typ = typ;
-  Transaktion::namn = namn;
-  Transaktion::belopp = belopp;
-  Transaktion::antal_kompisar = antal_kompisar;
-}
-string Transaktion::hamtaNamn(){
-   return namn;
-   }
-int Transaktion::hamtaAntalKompisar(){
-  return antal_kompisar;
-  }
-double Transaktion::hamtaBelopp(){
-  return belopp;
-  }
+Transaktion::Transaktion(string datum, string typ, string namn, double belopp, int antal_kompisar, string* kompisar)
+  : datum(datum), typ(typ), namn(namn), belopp(belopp), antal_kompisar(antal_kompisar){}
+
+string Transaktion::hamtaNamn(){return namn;}
+int Transaktion::hamtaAntalKompisar(){return antal_kompisar;}
+double Transaktion::hamtaBelopp(){return belopp;}
+string Transaktion::hamtaDatum(){return datum;}
+string Transaktion::hamtaKompis(int i){return kompisar[i];}
 bool Transaktion::finnsKompis(const string &namnet){
   for(int i = 0; i < MAX_PERSONER; i++) if(kompisar[i] == namnet) return true;
   return false;
@@ -118,7 +114,8 @@ bool Transaktion::lasIn(istream &is){
   string soker = " "; 
   int mellanrumPos, nuPos = 0, j = 0,  tidigarePos = 0;
 
-    while(!is.eof()){
+    if(!s.empty()){
+      while(!is.eof()){
       do{
     mellanrumPos = s.find(soker, nuPos);
     if(mellanrumPos >= 0){
@@ -139,54 +136,28 @@ bool Transaktion::lasIn(istream &is){
       if(!hallKoll[k].empty()){
         switch(k){
           case 0:
-            transaktioner.datum = stoi(hallKoll[k]);
+            datum = stoi(hallKoll[k]);
             break;
           case 1:
-            transaktioner.typ = hallKoll[i][k];
+            typ = hallKoll[k];
             break;
           case 2:
-            transaktioner[i].namn = hallKoll[i][k];
+            namn = hallKoll[k];
             break;
           case 3:
-            transaktioner[i].belopp = stod(hallKoll[i][k]);
+            belopp = stod(hallKoll[k]);
             break;
           case 4:
-            transaktioner[i].antal_kompisar = stoi(hallKoll[i][k]);
+            antal_kompisar = stoi(hallKoll[k]);
             break;
           default:
-            transaktioner[i].kompisar[k-5] = hallKoll[i][k];
-            break;
-        }
-      } else{
-
-      }
-    }
-   
-    for(int k = 0; k < kvitto.size(); k++){
-      if(kvitto[k] != " "){
-        switch(k){
-          case 0:
-            datum = stoi(kvitto[k]);
-            break;
-          case 1:
-            typ = kvitto[k];
-            break;
-          case 2:
-            namn = kvitto[k];
-            break;
-          case 3:
-            belopp = stod(kvitto[k]);
-            break;
-          case 4:
-            antal_kompisar = stoi(kvitto[k]);
-            break;
-          default:
-            kompisar[k-5] = kvitto[k];
+            kompisar[k-5] = hallKoll[k];
             break;
         }
       }
     }
-
+    return true;
+  } else return false;
 }
 void Transaktion::skrivUt(ostream &os){
 
@@ -201,43 +172,36 @@ double Person::hamtaBetalat(){
 double Person::hamtaSkyldig(){
   return skyldig;
   }
-void Person::skrivUt(ostream &os){
-  //  Stina ligger ute med 2500 och är skyldig 1333.33. Skall ha 1166.67 från potten! 
-}
 string Person::hamtaNamn(){
   return namn;
-  }
-Person::Person(const string &namn, double betalat_andras, double skyldig){
-  Person::namn = namn;
-  Person::betalat_andras = betalat_andras;
-  Person::skyldig = skyldig;
 }
+void Person::skrivUt(ostream &os){
+  //  Stina ligger ute med 2500 och är skyldig 1333.33. Skall ha 1166.67 från potten! 
+  double summa = hamtaSkyldig() - hamtaBetalat();
+
+  os << hamtaNamn() << "ligger ute med " << hamtaBetalat() << " och är skyldig " << hamtaSkyldig() << ".";
+  summa < 0 ? os << " Skall ha " << abs(summa) << " från potten!"
+  : os << " Skall lägga " << summa << " till potten!";
+
+}
+Person::Person(const string &namn, double betalat_andras, double skyldig)
+  : namn(namn), betalat_andras(betalat_andras), skyldig(skyldig){}
 
 void PersonLista::laggTill(Person ny_person){
-  bool tom = true;
-  int i = 0;
-  while(tom){
-    if(personer[i] == nullptr){
-       personer[i] = ny_person.namn;
-       tom = false;
-    } else i++;
-  }
+  personer[antal_personer] = ny_person;
+  antal_personer++;
 }
 void PersonLista::skrivUtOchFixa(ostream &os){
   os << "Nu skapar vi en personarray och reder ut det hela!" << endl;
   for(int i = 0; i < antal_personer; i++){
-    os << personer[i].hamtaNamn() << " ligger ute med " << personer[i].hamtaBetalat();
-    << " och är skyldig " << personer[i].hamtaSkyldig();
-    double summa = personer[i].hamtaSkyldig() - personer[i].hamtaBetalat();
-    cout << ".";
-    (summa < 0) ? (os << " Skall ha " << summa << " från potten!") 
-    : (os << " Skall lägga " << summa << " till potten!");
+    personer[i].skrivUt(os);
+    os << endl;
   }
 }
 double PersonLista::summaSkyldig(){
   double summa = 0;
   for(int i = 0; i < MAX_PERSONER; i++){
-    summa += personer[i].skyldig;
+    summa += personer[i].hamtaSkyldig();
   }
 
   return summa;
@@ -245,7 +209,7 @@ double PersonLista::summaSkyldig(){
 double PersonLista::summaBetalat(){
   double summa = 0;
   for(int i = 0; i < MAX_PERSONER; i++){
-    summa += personer[i].betalat_andras;
+    summa += personer[i].hamtaBetalat();
   }
 
   return summa;
@@ -253,7 +217,7 @@ double PersonLista::summaBetalat(){
 bool PersonLista::finnsPerson(const string& namn){
 
   for(int i = 0; i < MAX_PERSONER; i++){
-    if(personer[i] == namn){
+    if(personer[i].hamtaNamn() == namn){
       return true;
     }
   }
@@ -272,136 +236,67 @@ void TransaktionsLista::lasIn(istream &is){
 
   antal_transaktioner = rader;
 
-  string hallKoll[rader][MAX_PERSONER+3]; // MAX_PERSONER+3 för max i kvitto
-
-  for(int i = 0; i < rader; i++){
-  string soker = " "; 
-  int mellanrumPos, nuPos = 0, j = 0,  tidigarePos = 0;
-
-    while(!is.eof()){
-      do{
-    mellanrumPos = s.find(soker, nuPos);
-    if(mellanrumPos >= 0){
-      nuPos = mellanrumPos;
-      hallKoll[i][j] = s.substr(tidigarePos, nuPos - tidigarePos);
-      nuPos++;
-      tidigarePos = nuPos;
-      j++;
-    }
-  } while(mellanrumPos >= 0);
-  hallKoll[i][j] = s.substr(tidigarePos, s.length());
-  }
-  }
 
   // 0 = datum, 1 = typ av köp, 2 = köpare, 3 = pris, 4 = hur många som var med i köpet, 5+ = skyldiga köpare
 
-  for(int i = 0; i < antal_transaktioner; i++){
-    for(int k = 0; k < MAX_PERSONER+3; k++){
-      if(!hallKoll[i][k].empty()){
-        switch(k){
-          case 0:
-            transaktioner[i].datum = stoi(hallKoll[i][k]);
-            break;
-          case 1:
-            transaktioner[i].typ = hallKoll[i][k];
-            break;
-          case 2:
-            transaktioner[i].namn = hallKoll[i][k];
-            break;
-          case 3:
-            transaktioner[i].belopp = stod(hallKoll[i][k]);
-            break;
-          case 4:
-            transaktioner[i].antal_kompisar = stoi(hallKoll[i][k]);
-            break;
-          default:
-            transaktioner[i].kompisar[k-5] = hallKoll[i][k];
-            break;
-        }
-      }
-    }
-  }
 }
 void TransaktionsLista::skrivUt(ostream &os){
   os << "Antal trans = " << antal_transaktioner << endl;
-  skrivTitel(os);
+  transaktioner[0].skrivTitel(os);
   for(int i = 0; i < antal_transaktioner; i++){
-    os << transaktioner[i].datum << "  " << transaktioner[i].typ << "  " << transaktioner[i].namn 
-    << "  " << transaktioner[i].belopp << "  " << transaktioner[i].antal_kompisar;
+    os << transaktioner[i].hamtaDatum() << "  " << transaktioner[i].hamtaTyp() << "  " << transaktioner[i].hamtaNamn() 
+    << "  " << transaktioner[i].hamtaBelopp() << "  " << transaktioner[i].hamtaAntalKompisar();
     for(int j = 0; j < MAX_PERSONER; j++){
-      if(!transaktioner[i].kompisar[j].empty()){
-        os << transaktioner[i].kompisar[j] << "  ";
+      if(!transaktioner[i].hamtaKompis(j).empty()){
+        os << transaktioner[i].hamtaKompis(j) << "  ";
       }
     }
     os << endl;
   }
 }
 void TransaktionsLista::laggTill(Transaktion & t){
-  
-  for(int k = 0; k < MAX_PERSONER+3; k++){
-        switch(k){
-          case 0:
-            transaktioner[antal_transaktioner].datum = t.datum;
-            break;
-          case 1:
-            transaktioner[antal_transaktioner].typ = t.typ;
-            break;
-          case 2:
-            transaktioner[antal_transaktioner].namn = t.namn;
-            break;
-          case 3:
-            transaktioner[antal_transaktioner].belopp = t.belopp;
-            break;
-          case 4:
-            transaktioner[antal_transaktioner].antal_kompisar = t.antal_kompisar;
-            break;
-          default:
-            transaktioner[antal_transaktioner].kompisar[k-5] = t.kompisar[k-5];
-            break;
-        }
-    }
-
+  transaktioner[antal_transaktioner] = t;
   antal_transaktioner++;
 }
 double TransaktionsLista::totalKostnad(){
   double summa = 0.;
 
-  for(int i=0; i < antal_transaktioner; i++) summa += transaktioner[i].belopp;
+  for(int i=0; i < antal_transaktioner; i++) summa += transaktioner[i].hamtaBelopp();
 
   return summa;
 }
-double TransaktionsLista::liggerUteMed(const string &namnet) const{
+double TransaktionsLista::liggerUteMed(const string &namnet){
    double summa = 0.;
    for (int i = 0; i < antal_transaktioner; i++)
      if (transaktioner[i].hamtaNamn() == namnet)
        summa += transaktioner[i].hamtaBelopp() *
-                (1.0 - 1.0 / (transaktioner[i].antalKompisar() + 1));
+                (1.0 - 1.0 / (transaktioner[i].hamtaAntalKompisar() + 1));
    return summa;
  }
-double TransaktionsLista::arSkyldig(const string &namnet)const{
+double TransaktionsLista::arSkyldig(const string &namnet){
    double summa = 0.;
    for (int i = 0; i < antal_transaktioner; i++)
      if (transaktioner[i].hamtaNamn() == namnet)
        summa += transaktioner[i].hamtaBelopp() *
-                (1.0 / (transaktioner[i].antalKompisar() + 1));
+                (1.0 / (transaktioner[i].hamtaAntalKompisar() + 1));
    return summa;
  }
 PersonLista TransaktionsLista::fixaPersoner(){
   PersonLista p;
-
   bool finns = false;
-  string unika_kompisar[hamtaAntalKompisar()];
-  for(int i = 0; i < hamtaAntalKompisar(); i++){
+  string unika_kompisar[MAX_PERSONER];
+  for(int i = 0; i < MAX_PERSONER; i++){
     for(int j = 0; j < MAX_PERSONER; i++ ){
-      if(finnsPerson(kompisar[j])){
-        for(int k = 0; k < hamtaAntalKompisar(); k++){
-          if(unika_kompisar[k] == kompisar[j]){
+      if(p.finnsPerson(transaktioner[i].hamtaKompis(j))){
+        for(int k = 0; k < MAX_PERSONER; k++){
+          if(unika_kompisar[k] == transaktioner[i].hamtaKompis(j)){
             finns = true;
           }
         }
         if(!finns){
-          unika_kompisar[i] = kompisar[j];
-          p.personer[i](unika_kompisar[i], liggerUteMed(unika_kompisar[i]), arSkyldig(unika_kompisar[i]));
+          unika_kompisar[i] = transaktioner[i].hamtaKompis(j);
+          Person temp(unika_kompisar[i], liggerUteMed(unika_kompisar[i]), arSkyldig(unika_kompisar[i]));
+          p.laggTill(temp);
         } 
       }
     }

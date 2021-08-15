@@ -3,7 +3,8 @@
         "iostream": "cpp",
         "ostream": "cpp",
         "cstdlib": "cpp",
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "xstring": "cpp"
     },
     "cSpell.ignoreWords": [
         "inmatning"
