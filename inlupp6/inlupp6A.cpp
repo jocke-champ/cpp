@@ -23,7 +23,7 @@ class Person
    double skyldig;        // skyldig totalt
 
  public:
-   Person();
+   Person(){};
    Person(const string &namn, double betalat_andras, double skyldig);
    double hamtaBetalat();
    double hamtaSkyldig();
@@ -38,8 +38,8 @@ class PersonLista
    Person personer[MAX_PERSONER];
 
  public:
-   PersonLista();
-   ~PersonLista();
+   PersonLista(){};
+   ~PersonLista(){};
    void   laggTill(Person ny_person);
    void   skrivUtOchFixa(ostream &os);
    double summaSkyldig();
@@ -59,9 +59,9 @@ class Transaktion
    string kompisar[MAX_PERSONER];
 
  public:
-   Transaktion();
+   Transaktion(){};
    Transaktion(string datum, string typ, string namn, double belopp, int antal_kompisar, string* kompisar);
-   ~Transaktion();
+   ~Transaktion(){};
    string hamtaNamn();
    double hamtaBelopp();
    int    hamtaAntalKompisar();
@@ -82,8 +82,8 @@ class Transaktion
    Transaktion transaktioner[MAX_TRANSAKTIONER];
 
  public:
-   TransaktionsLista();
-   ~TransaktionsLista();
+   TransaktionsLista(){};
+   ~TransaktionsLista(){};
    void   lasIn(istream & is);
    void   skrivUt(ostream & os);
    void   laggTill(Transaktion & t);
@@ -101,6 +101,7 @@ string Transaktion::hamtaNamn(){return namn;}
 int Transaktion::hamtaAntalKompisar(){return antal_kompisar;}
 double Transaktion::hamtaBelopp(){return belopp;}
 string Transaktion::hamtaDatum(){return datum;}
+string Transaktion::hamtaTyp(){return typ;}
 string Transaktion::hamtaKompis(int i){return kompisar[i];}
 bool Transaktion::finnsKompis(const string &namnet){
   for(int i = 0; i < MAX_PERSONER; i++) if(kompisar[i] == namnet) return true;
