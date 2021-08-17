@@ -15,298 +15,322 @@ using namespace std;
 
 const int MAX_PERSONER = 10, MAX_TRANSAKTIONER = 30;
 
-class Person
- {
- private:
-   string namn;
-   double betalat_andras; // ligger ute med totalt
-   double skyldig;        // skyldig totalt
+class Transaktion{
+    private:
+        string datum, typ, namn, kompisar[MAX_PERSONER];
+        double belopp;
+        int antal_kompisar;
 
- public:
-   Person(){};
-   Person(const string &namn, double betalat_andras, double skyldig);
-   double hamtaBetalat();
-   double hamtaSkyldig();
-   string hamtaNamn();
-   void   skrivUt(ostream &os);
+    public:
+        Transaktion(){};
+        ~Transaktion(){};
+        string hamtaNamn();
+        double hamtaBelopp();
+        string hamtaKompis(int i);
+        int    hamtaAntalKompisar();
+        bool   finnsKompis(const string &namnet);
+        bool   lasIn(istream &is);
+        void   skrivUt(ostream &os);
+        void   skrivTitel(ostream &os);
+   
 };
 
-class PersonLista
- {
- private:
-   int    antal_personer;
-   Person personer[MAX_PERSONER];
-
- public:
-   PersonLista(){};
-   ~PersonLista(){};
-   void   laggTill(Person ny_person);
-   void   skrivUtOchFixa(ostream &os);
-   double summaSkyldig();
-   double summaBetalat();
-   bool   finnsPerson(const string& namn);
-    // ...eventuellt div. annat...
- }; 
-
-class Transaktion
- {
- private:
-   string datum;
-   string typ;
-   string namn;
-   double belopp;
-   int    antal_kompisar;
-   string kompisar[MAX_PERSONER];
-
- public:
-   Transaktion(){};
-   Transaktion(string datum, string typ, string namn, double belopp, int antal_kompisar, string* kompisar);
-   ~Transaktion(){};
-   string hamtaNamn();
-   double hamtaBelopp();
-   int    hamtaAntalKompisar();
-   string hamtaDatum();
-   string hamtaTyp();
-   string hamtaKompis(int i);
-   bool   finnsKompis(const string &namnet);
-   bool   lasIn(istream &is);
-   void   skrivUt(ostream &os);
-   void   skrivTitel(ostream &os);
-    // ...eventuellt div. annat...
- }; 
-
- class TransaktionsLista
- {
- private:
-   int antal_transaktioner;
-   Transaktion transaktioner[MAX_TRANSAKTIONER];
-
- public:
-   TransaktionsLista(){};
-   ~TransaktionsLista(){};
-   void   lasIn(istream & is);
-   void   skrivUt(ostream & os);
-   void   laggTill(Transaktion & t);
-   double totalKostnad();
-   double liggerUteMed(const string &namnet);
-   double arSkyldig(const string &namnet);
-   PersonLista fixaPersoner();
-    // ...eventuellt div. annat...
- }; 
-
-Transaktion::Transaktion(string datum, string typ, string namn, double belopp, int antal_kompisar, string* kompisar)
-  : datum(datum), typ(typ), namn(namn), belopp(belopp), antal_kompisar(antal_kompisar){}
-
+// Metoderna hamtaNamn, hamtaAntalKompisar och hamtaBelopp är s k selektorer, 
+// som returnerar motsvarande attributvärden.
 string Transaktion::hamtaNamn(){return namn;}
-int Transaktion::hamtaAntalKompisar(){return antal_kompisar;}
 double Transaktion::hamtaBelopp(){return belopp;}
-string Transaktion::hamtaDatum(){return datum;}
-string Transaktion::hamtaTyp(){return typ;}
-string Transaktion::hamtaKompis(int i){return kompisar[i];}
+int Transaktion::hamtaAntalKompisar(){return antal_kompisar;}
+
+// Metoden finnsKompis letar igenom arrayen kompisar och returnerar true om namnet finns, annars false.
 bool Transaktion::finnsKompis(const string &namnet){
-  for(int i = 0; i < MAX_PERSONER; i++) if(kompisar[i] == namnet) return true;
-  return false;
-}
-bool Transaktion::lasIn(istream &is){
+    for(auto s : kompisar){if(s == namnet){return true;}}return false;}
 
-  string s;
-  is >> s;
-  string hallKoll[MAX_PERSONER+3]; // MAX_PERSONER+3 för max i kvitto
-  string soker = " "; 
-  int mellanrumPos, nuPos = 0, j = 0,  tidigarePos = 0;
+// Metoden skrivUt skriver ut information om ett objekt (dvs "aktuella objektet" tillhörande denna klass), 
+// dvs attributens värden, antingen till en fil eller till skärmen. 
+// Se körexempel nedan. Metoden skrivTitel skriver ut titeln som beskriver vad som står i kolonner för metoden skrivUt.
 
-    if(!s.empty()){
-      while(!is.eof()){
-      do{
-    mellanrumPos = s.find(soker, nuPos);
-    if(mellanrumPos >= 0){
-      nuPos = mellanrumPos;
-      hallKoll[j] = s.substr(tidigarePos, nuPos - tidigarePos);
-      nuPos++;
-      tidigarePos = nuPos;
-      j++;
-    }
-  } while(mellanrumPos >= 0);
-  hallKoll[j] = s.substr(tidigarePos, s.length());
-  }
-  
-
-  // 0 = datum, 1 = typ av köp, 2 = köpare, 3 = pris, 4 = hur många som var med i köpet, 5+ = skyldiga köpare
-
-    for(int k = 0; k < MAX_PERSONER+3; k++){
-      if(!hallKoll[k].empty()){
-        switch(k){
-          case 0:
-            datum = stoi(hallKoll[k]);
-            break;
-          case 1:
-            typ = hallKoll[k];
-            break;
-          case 2:
-            namn = hallKoll[k];
-            break;
-          case 3:
-            belopp = stod(hallKoll[k]);
-            break;
-          case 4:
-            antal_kompisar = stoi(hallKoll[k]);
-            break;
-          default:
-            kompisar[k-5] = hallKoll[k];
-            break;
-        }
-      }
-    }
-    return true;
-  } else return false;
-}
 void Transaktion::skrivUt(ostream &os){
-
+    os << datum << " " << typ << " " << namn << " " << belopp << " " << antal_kompisar;
+    for(int i = 0; i < antal_kompisar; i++){os << " " << kompisar[i];}
+    os << endl;
 }
 void Transaktion::skrivTitel(ostream &os){
   os << "Datum  Typ  Namn  Belopp  Antal  och lista av kompisar" << endl;
 }
 
-double Person::hamtaBetalat(){
-  return betalat_andras;
-  }
-double Person::hamtaSkyldig(){
-  return skyldig;
-  }
-string Person::hamtaNamn(){
-  return namn;
+// Metoden lasIn läser data om en transaktion (kvitto) från tangentbord eller en fil. Denna är av typen bool,
+// eftersom den kan komma att anropas från klassen TransaktionsLista:s metod lasIn med en loop av typen
+
+bool Transaktion::lasIn(istream &is){
+    bool tom = true;
+    string ord = "", rad;
+    string Templista[MAX_PERSONER + 4], TempKompis[MAX_PERSONER];
+    int upprepningar = 0;
+    int i = 0;
+    while(getline(is, rad)){
+        tom = false;
+        for(char x : rad){
+        if(x == ' '){
+            if(upprepningar == 0){
+                Templista[i] = ord;
+                i++;
+            }
+            ord = "";
+            upprepningar++;
+        } else {
+            ord = ord + x;
+            upprepningar = 0;
+        }}}
+        datum = Templista[0];
+        typ = Templista[1];
+        namn = Templista[2];
+        belopp = stod(Templista[3]);
+        antal_kompisar = stoi(Templista[4]);
+        for(int j = 0; j < antal_kompisar; j++){
+            kompisar[j] = Templista[j+5];
+        }
+    return !tom;
 }
+string Transaktion::hamtaKompis(int i){return kompisar[i];}
+
+class Person{
+    private:
+        string namn;
+        double betalat_andras, skyldig; //ligguer ute med totalt, respektive skyldig totalt
+
+    public:
+        Person(){};
+        Person(const string &namn, double betalat_andras, double skyldig){};
+        string hamtaNamn();
+        double hamtaBetalat();
+        double hamtaSkyldig();
+        void andraBetalat(double betalat_, double skyldig_);
+        void   skrivUt(ostream &os);
+};
+
+// Här är metoderna hamtaBetalat och hamtaSkyldig
+// s k selektorer som returnerar attributvärden betalat_andras respektive skyldig.
+
+string Person::hamtaNamn(){return namn;}
+double Person::hamtaBetalat(){return betalat_andras;}
+double Person::hamtaSkyldig(){return skyldig;}
+
+// Metoden skrivUt skriver ut personens namn och hur mycket personen ligger ute med samt är skyldig och vad han/hon skall betala till, 
+// eller ta ifrån potten (dvs attributen). Det kan t ex se ut så här:
+//  Stina ligger ute med 2500 och är skyldig 1333.33. Skall ha 1166.67 från potten! 
+
 void Person::skrivUt(ostream &os){
-  //  Stina ligger ute med 2500 och är skyldig 1333.33. Skall ha 1166.67 från potten! 
-  double summa = hamtaSkyldig() - hamtaBetalat();
-
-  os << hamtaNamn() << "ligger ute med " << hamtaBetalat() << " och är skyldig " << hamtaSkyldig() << ".";
-  summa < 0 ? os << " Skall ha " << abs(summa) << " från potten!"
-  : os << " Skall lägga " << summa << " till potten!";
-
+    os << hamtaNamn() << "ligger ute med " << hamtaBetalat() << " och är skyldig " << hamtaSkyldig() << ".";
+    double summa = hamtaBetalat() - hamtaSkyldig();
+    if(summa < 0){os << " Skall betala " << abs(summa) << " till potten!";
+    }else{os << " Skall ha " << abs(summa) << " från potten!";
+    }
 }
-Person::Person(const string &namn, double betalat_andras, double skyldig)
-  : namn(namn), betalat_andras(betalat_andras), skyldig(skyldig){}
+
+void Person::andraBetalat(double betalat_, double skyldig_){
+    betalat_andras += betalat_;
+    skyldig += skyldig_;
+}
+class PersonLista{
+    private:
+        int antal_personer;
+        Person personer[MAX_TRANSAKTIONER];
+    
+    public:
+        PersonLista(){};
+        ~PersonLista(){};
+        void   laggTill(Person ny_person);
+        void   skrivUtOchFixa(ostream &os);
+        double summaSkyldig();
+        double summaBetalat();
+        int hamtaAntalPersoner();
+        Person hamtaPerson(int i);
+        bool   finnsPerson(const string& namn);
+};
+
+// Metoden laggTill tar ett personobjekt som inparameter,
+// ny_person, och lägger till i arrayen personer, efter den sista personen.
 
 void PersonLista::laggTill(Person ny_person){
-  personer[antal_personer] = ny_person;
-  antal_personer++;
+    personer[antal_personer] = ny_person;
+    antal_personer++;
 }
+
+// Metoden skrivUtOchFixa skriver ut information om varje personobjekt i arrayen pers
+// samt kollar att det belopp som personer lägger till potten är lika med det belopp som andra personer tar från potten.
+
 void PersonLista::skrivUtOchFixa(ostream &os){
-  os << "Nu skapar vi en personarray och reder ut det hela!" << endl;
-  for(int i = 0; i < antal_personer; i++){
-    personer[i].skrivUt(os);
-    os << endl;
-  }
+    for(int i = 0; i < antal_personer; i++){
+        personer[i].skrivUt(os);
+    }
 }
+
 double PersonLista::summaSkyldig(){
-  double summa = 0;
-  for(int i = 0; i < MAX_PERSONER; i++){
-    summa += personer[i].hamtaSkyldig();
-  }
-
-  return summa;
+    double summaSkyldig = 0.;
+    for(int i = 0; i < antal_personer; i++){
+        summaSkyldig += personer[i].hamtaSkyldig();
+    } return summaSkyldig;
 }
+
 double PersonLista::summaBetalat(){
-  double summa = 0;
-  for(int i = 0; i < MAX_PERSONER; i++){
-    summa += personer[i].hamtaBetalat();
-  }
-
-  return summa;
+    double summaBetalat = 0.f;
+    for(int i = 0; i < antal_personer; i++){
+        summaBetalat += personer[i].hamtaBetalat();
+    } return summaBetalat;
 }
+
+// Metoden finnsPerson() returnerar sant om namn finns bland personerna i listan, falskt annars.
+// Används lämpligen i FixaPersoner i TransaktionsLista för att undvika att lagra dubletter.
+
 bool PersonLista::finnsPerson(const string& namn){
+    for(int i = 0; i < antal_personer; i++){
+        if(personer[i].hamtaNamn() == namn){ return true; }
+    } return false;
+}
 
-  for(int i = 0; i < MAX_PERSONER; i++){
-    if(personer[i].hamtaNamn() == namn){
-      return true;
+int PersonLista::hamtaAntalPersoner(){return antal_personer;}
+Person PersonLista::hamtaPerson(int i){return personer[i];}
+class TransaktionsLista{
+    private:
+        int antal_transaktioner;
+        Transaktion transaktioner[MAX_TRANSAKTIONER];
+    
+    public:
+        TransaktionsLista(){};
+        ~TransaktionsLista(){};
+        void   lasIn(istream & is);
+        void   skrivUt(ostream & os);
+        void   laggTill(Transaktion & t);
+        double totalKostnad();
+        double liggerUteMed(const string &namnet);
+        double arSkyldig(const string &namnet);
+        PersonLista FixaPersoner();
+};
+
+// Metoderna lasIn och skrivUt läser in värden till ett TransaktionsLista-objekt från/till fil eller tangentbord/skärm.
+// Använder sig av inläsnings- och utskriftsmetoder i klassen Transaktion.
+
+void TransaktionsLista::lasIn(istream & is){
+    for(int i = 0; i < antal_transaktioner; i++){
+        string s;
+        while(getline(is, s)){transaktioner[i].lasIn(is);}
     }
-  }
-  return false;
 }
 
-void TransaktionsLista::lasIn(istream &is){
-
-  string s;
-  int rader;
-
-  while(!is.eof()){
-    getline(is, s);
-    rader++;
-  }
-
-  antal_transaktioner = rader;
-
-
-  // 0 = datum, 1 = typ av köp, 2 = köpare, 3 = pris, 4 = hur många som var med i köpet, 5+ = skyldiga köpare
-
-}
-void TransaktionsLista::skrivUt(ostream &os){
-  os << "Antal trans = " << antal_transaktioner << endl;
-  transaktioner[0].skrivTitel(os);
-  for(int i = 0; i < antal_transaktioner; i++){
-    os << transaktioner[i].hamtaDatum() << "  " << transaktioner[i].hamtaTyp() << "  " << transaktioner[i].hamtaNamn() 
-    << "  " << transaktioner[i].hamtaBelopp() << "  " << transaktioner[i].hamtaAntalKompisar();
-    for(int j = 0; j < MAX_PERSONER; j++){
-      if(!transaktioner[i].hamtaKompis(j).empty()){
-        os << transaktioner[i].hamtaKompis(j) << "  ";
-      }
+void TransaktionsLista::skrivUt(ostream & os){
+    for(int i=0; i < antal_transaktioner; i++){
+        transaktioner[i].skrivUt(os);
     }
-    os << endl;
-  }
 }
+
+// Metoden laggTill ska lägga till ett nytt transaktionsobjekt sist i arrayen transaktioner.
+
 void TransaktionsLista::laggTill(Transaktion & t){
-  transaktioner[antal_transaktioner] = t;
-  antal_transaktioner++;
+    transaktioner[antal_transaktioner] = t;
+    antal_transaktioner++;
 }
+
+// Metoden totalKostnad beräknar och returnerar summan av alla utgifter på resan 
+// (så man kan jämföra olika år och se om det t ex blir dyrare).
+
 double TransaktionsLista::totalKostnad(){
-  double summa = 0.;
-
-  for(int i=0; i < antal_transaktioner; i++) summa += transaktioner[i].hamtaBelopp();
-
-  return summa;
+    double summa = 0.;
+    for(int i = 0; i < antal_transaktioner; i++){
+        summa += transaktioner[i].hamtaBelopp();
+    } return summa;
 }
-double TransaktionsLista::liggerUteMed(const string &namnet){
+
+// Metoden liggerUteMed räknar ut hur mycket en viss person,
+// dvs med namnet namnet har betalat för andra personer och alltså ligger ute med.
+// Detta belopp räknas ut genom att gå igenom alla transaktioner.
+// Det är det viktigt att ta bort den del som personen har betalat för sig själv,
+// vilket i sin tur beror på antal kompiser.
+
+ double TransaktionsLista::liggerUteMed(const string &namn){
    double summa = 0.;
    for (int i = 0; i < antal_transaktioner; i++)
-     if (transaktioner[i].hamtaNamn() == namnet)
+     if (transaktioner[i].hamtaNamn() == namn)
        summa += transaktioner[i].hamtaBelopp() *
                 (1.0 - 1.0 / (transaktioner[i].hamtaAntalKompisar() + 1));
    return summa;
  }
-double TransaktionsLista::arSkyldig(const string &namnet){
+
+// Metoden arSkyldig räknar ut hur mycket en viss person, dvs med namnet namnet är skyldig andra,
+// vilket igen räknas ut genom att gå igenom alla transaktioner och andelen av personen av transaktionen.
+
+double TransaktionsLista::arSkyldig(const string &namn) {
    double summa = 0.;
    for (int i = 0; i < antal_transaktioner; i++)
-     if (transaktioner[i].hamtaNamn() == namnet)
+     if (transaktioner[i].hamtaNamn() == namn)
        summa += transaktioner[i].hamtaBelopp() *
                 (1.0 / (transaktioner[i].hamtaAntalKompisar() + 1));
    return summa;
  }
-PersonLista TransaktionsLista::fixaPersoner(){
-  PersonLista p;
-  bool finns = false;
-  string unika_kompisar[MAX_PERSONER];
-  for(int i = 0; i < MAX_PERSONER; i++){
-    for(int j = 0; j < MAX_PERSONER; i++ ){
-      if(p.finnsPerson(transaktioner[i].hamtaKompis(j))){
-        for(int k = 0; k < MAX_PERSONER; k++){
-          if(unika_kompisar[k] == transaktioner[i].hamtaKompis(j)){
-            finns = true;
-          }
-        }
-        if(!finns){
-          unika_kompisar[i] = transaktioner[i].hamtaKompis(j);
-          Person temp(unika_kompisar[i], liggerUteMed(unika_kompisar[i]), arSkyldig(unika_kompisar[i]));
-          p.laggTill(temp);
-        } 
-      }
-    }
-  }
-  return p;
 
+//  Metoden FixaPersoner ska skapa och returnera ett objekt av typen
+//  PersonLista genom att gå igenom transaktionslistan och
+//  plocka ut alla unika personer som förekommer i transaktionerna.
+//  Metoden skall för varje person ta reda på hennes speciella egenskaper
+//  (dvs hur mycket pengar hon ligger ute med åt andra personer totalt,
+//  samt hur mycket hon själv är skyldig de andra totalt),
+//  sedan skall personobjekt skapas som läggs till objektet av typen PersonLista,
+//  som slutligen returneras.
+//  Dvs man bygger upp med fler och fler personer till
+//  den array som är attribut inne objekt av typen PersonLista.
+
+// Detta är en viktig metod i klassen.
+// I denna metod så är alltså ett delproblem att helt enkelt ta reda på alla olika
+// (unika) namn som finns på personer i transaktionslistan.
+
+PersonLista TransaktionsLista::FixaPersoner(){
+    PersonLista p;
+
+    // gå igenom en transaktion i taget, om namnet inte finns i en array,
+    // lägg till den i array, hämta sedan betalat() och skyldig() från namn
+    // och lägg till i Personlista.person med index av namn
+    // och lägg updpatera värden på skyldig så += belopp, resp skyldig.
+    // returnera sedan personlistan p.
+
+    // lägger in namn i namn-array
+    string namn[MAX_PERSONER];
+    for(int i = 0; i < antal_transaktioner; i++){
+        for(int j = 0; j < MAX_PERSONER; j++){
+            if(namn[j] == transaktioner[i].hamtaNamn()){
+            } else {namn[i] = transaktioner[i].hamtaNamn();}}}
+
+    //lägger till namnen till PersonLista p
+    for(int i = 0; i < MAX_PERSONER; i++){
+        if(!namn[i].empty()){
+            Person temp(namn[i], 0, 0);
+            p.laggTill(temp);
+        }
+    }
+
+    //fixar värden för att personer i PersonLista p
+    for(int i = 0; i < antal_transaktioner; i++){
+        int kompisarTot = 0;
+        kompisarTot = transaktioner[i].hamtaAntalKompisar();
+        for(int j = 0; j < MAX_PERSONER; j++){
+            if(namn[j] == transaktioner[i].hamtaNamn()){
+                for(int k = 0; k < p.hamtaAntalPersoner(); k++){
+                    if(namn[j] == p.hamtaPerson(k).hamtaNamn()){
+                        p.hamtaPerson(k).andraBetalat(transaktioner[i].hamtaBelopp(), 0);
+                        
+                        for(int l = 0; l < MAX_PERSONER; l++){
+                            if(transaktioner[i].hamtaKompis(j) == p.hamtaPerson(l).hamtaNamn()){
+                                p.hamtaPerson(l).andraBetalat(0, (transaktioner[i].hamtaBelopp() / 5));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return p;
 }
 
- int main(){
+int main()
+{
   cout << "Startar med att läsa från en fil." << endl;
 
   TransaktionsLista transaktioner;
@@ -322,7 +346,7 @@ PersonLista TransaktionsLista::fixaPersoner(){
       cout << "1. Skriv ut information om alla transaktioner." << endl;
       cout << "2. Läs in en transaktion från tangentbordet." << endl;
       cout << "3. Beräkna totala kostnaden." << endl;
-      cout << "4. Hur mycket är en viss person skyldig?" << endl;
+      cout << "4. Hur mycket ärr en viss person skyldig?" << endl;
       cout << "5. Hur mycket ligger en viss person ute med?" << endl;
       cout << "6. Lista alla personer mm och FIXA" << endl;
 
@@ -378,7 +402,7 @@ PersonLista TransaktionsLista::fixaPersoner(){
           case 6:
             {
               cout << "Nu skapar vi en personarray och reder ut det hela!" << endl;
-              PersonLista lista = transaktioner.fixaPersoner();
+              PersonLista lista = transaktioner.FixaPersoner();
               lista.skrivUtOchFixa(cout);
               break;
             }

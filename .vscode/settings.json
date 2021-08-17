@@ -4,9 +4,11 @@
         "ostream": "cpp",
         "cstdlib": "cpp",
         "cmath": "cpp",
-        "xstring": "cpp"
+        "xstring": "cpp",
+        "iosfwd": "cpp"
     },
     "cSpell.ignoreWords": [
         "inmatning"
-    ]
+    ],
+    "C_Cpp.errorSquiggles": "Disabled"
 }
