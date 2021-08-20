@@ -89,6 +89,7 @@ bool Transaktion::lasIn(istream &is){
         for(int j = 0; j < antal_kompisar; j++){
             kompisar[j] = Templista[j+5];
         }
+        cout << "test transaktionklass lasin" << endl;
     return !tom;
 }
 string Transaktion::hamtaKompis(int i){return kompisar[i];}
@@ -331,10 +332,10 @@ PersonLista TransaktionsLista::FixaPersoner(){
 
 int main()
 {
-  cout << "Startar med att läsa från en fil." << endl;
+  // Startar med att läsa från en fil.
 
   TransaktionsLista transaktioner;
-  std::ifstream     is("resa.txt");
+  std::ifstream is("resa.txt");
   transaktioner.lasIn(is);
 
   int operation = 1;
@@ -358,6 +359,7 @@ int main()
           case 1:
             {
               transaktioner.skrivUt(cout);
+              cout << "test 1";
               break;
             }
           case 2:
